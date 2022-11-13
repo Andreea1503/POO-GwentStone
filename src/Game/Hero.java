@@ -1,5 +1,7 @@
 package Game;
 
+import fileio.CardInput;
+
 import java.util.ArrayList;
 
 public class Hero extends Card{
@@ -7,14 +9,13 @@ public class Hero extends Card{
     public static int heroShifts = 1;
     boolean attack;
 
-    public Hero(int mana, int attackDamage, String description,
-                ArrayList<String> colors, String name) {
-        this.mana = mana;
-        this.attackDamage = attackDamage;
+    public Hero(CardInput card) {
+        this.mana = card.getMana();
+        this.attackDamage = card.getAttackDamage();
         this.health = maxHealth;
-        this.description = description;
-        this.colors = colors;
-        this.name = name;
+        this.description = card.getDescription();
+        this.colors = card.getColors();
+        this.name = card.getName();
         this.attack = false;
     }
 
@@ -56,5 +57,25 @@ public class Hero extends Card{
             card.attackDamage += heroShifts;
         }
         attack = true;
+    }
+    @Override
+    public String toString() {
+        return "CardInput{"
+                +  "mana="
+                + mana
+                +  ", attackDamage="
+                + attackDamage
+                + ", health="
+                + health
+                +  ", description='"
+                + description
+                + '\''
+                + ", colors="
+                + colors
+                + ", name='"
+                +  ""
+                + name
+                + '\''
+                + '}';
     }
 }

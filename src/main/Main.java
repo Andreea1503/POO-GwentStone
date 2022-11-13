@@ -1,20 +1,20 @@
 package main;
 
+import Game.*;
 import checker.Checker;
-
+import checker.CheckerConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import checker.CheckerConstants;
-import fileio.Input;
+import fileio.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Objects;
-
 /**
  * The entry point to this homework. It runs the checker that tests your implentation.
  */
@@ -70,6 +70,33 @@ public final class Main {
         ArrayNode output = objectMapper.createArrayNode();
 
         //TODO add here the entry point to your implementation
+
+//        DecksInput decksInput = inputData.getPlayerOneDecks();
+//        ArrayList<ArrayList<CardInput>> decks = decksInput.getDecks();
+//        ArrayList<CardInput> deck = decks.get(0);
+//        CardInput card = deck.get(0);
+//
+//        Minion minion = new Minion(card);
+//
+//        System.out.println(minion);
+
+        DecksInput decksInputPlayer1 = inputData.getPlayerOneDecks();
+        DecksInput decksInputPlayer2 = inputData.getPlayerTwoDecks();
+//        Game.createDecks(decksInput);
+        Player player = new Player(Game.createDecks(decksInputPlayer1), Game.createDecks(decksInputPlayer2));
+
+        ArrayList<GameInput> input = inputData.getGames();
+        Game game = null;
+        for (GameInput gameInput : input) {
+            StartGameInput stGameInput = gameInput.getStartGame();
+            Hero playerOneHero = new Hero(stGameInput.getPlayerOneHero());
+            Hero playerTwoHero = new Hero(stGameInput.getPlayerTwoHero());
+            game = new Game(stGameInput.getPlayerOneDeckIdx(), stGameInput.getPlayerTwoDeckIdx(), stGameInput.getShuffleSeed(),
+                            playerOneHero, playerTwoHero, stGameInput.getStartingPlayer());
+//            System.out.println(game);
+        }
+
+
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);

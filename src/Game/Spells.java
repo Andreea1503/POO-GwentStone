@@ -1,13 +1,15 @@
 package Game;
 
+import fileio.CardInput;
+
 import java.util.ArrayList;
 
 public class Spells extends Minion {
     boolean usedAbility;
     public static int spellsShift = 2;
 
-    public Spells(int mana, int attackDamage, int health, String description, ArrayList<String> colors, String name) {
-        super(mana, attackDamage, health, description, colors, name);
+    public Spells(CardInput card) {
+        super(card);
         this.usedAbility = false;
     }
 

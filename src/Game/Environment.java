@@ -1,17 +1,18 @@
 package Game;
 
+import fileio.CardInput;
+
 import java.util.ArrayList;
 
 public class Environment extends Card {
     public static int environmentShifts = 1;
     boolean usedAbility;
 
-    public Environment(int mana, String description, ArrayList<String>
-                       colors, String name) {
-        this.mana = mana;
-        this.description = description;
-        this.colors = colors;
-        this.name = name;
+    public Environment(CardInput card) {
+        this.mana = card.getMana();
+        this.description = card.getDescription();
+        this.colors = card.getColors();
+        this.name = card.getName();
         this.usedAbility = false;
     }
 
@@ -48,4 +49,22 @@ public class Environment extends Card {
 
         usedAbility = true;
     }
+
+    @Override
+    public String toString() {
+        return "CardInput{"
+                +  "mana="
+                + mana
+                +  ", description='"
+                + description
+                + '\''
+                + ", colors="
+                + colors
+                + ", name='"
+                +  ""
+                + name
+                + '\''
+                + '}';
+    }
+
 }
