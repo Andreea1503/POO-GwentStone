@@ -1,11 +1,12 @@
 package main;
-
+import java.util.Random;
 import Game.*;
 import checker.Checker;
 import checker.CheckerConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+
 import fileio.*;
 
 import java.io.File;
@@ -83,7 +84,6 @@ public final class Main {
         DecksInput decksInputPlayer1 = inputData.getPlayerOneDecks();
         DecksInput decksInputPlayer2 = inputData.getPlayerTwoDecks();
 //        Game.createDecks(decksInput);
-        Player player = new Player(Game.createDecks(decksInputPlayer1), Game.createDecks(decksInputPlayer2));
 
         ArrayList<GameInput> input = inputData.getGames();
         Game game = null;
@@ -91,9 +91,15 @@ public final class Main {
             StartGameInput stGameInput = gameInput.getStartGame();
             Hero playerOneHero = new Hero(stGameInput.getPlayerOneHero());
             Hero playerTwoHero = new Hero(stGameInput.getPlayerTwoHero());
-            game = new Game(stGameInput.getPlayerOneDeckIdx(), stGameInput.getPlayerTwoDeckIdx(), stGameInput.getShuffleSeed(),
-                            playerOneHero, playerTwoHero, stGameInput.getStartingPlayer());
+            Player player1 = new Player(Game.createDecks(decksInputPlayer1),
+                                stGameInput.getPlayerOneDeckIdx(),
+                                playerOneHero);
+            Player player2 = new Player(Game.createDecks(decksInputPlayer2), stGameInput.getPlayerTwoDeckIdx(),
+                                        playerTwoHero);
+            game = new Game(stGameInput.getStartingPlayer(), stGameInput.getShuffleSeed());
 //            System.out.println(game);
+            ArrayList<ActionsInput> actionsInputs = gameInput.getActions();
+            Game.parseActions(actionsInputs, game, player1, player2, output);
         }
 
 
