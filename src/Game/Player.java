@@ -13,8 +13,10 @@ public class Player {
     Decks playerDecks;
     int playerDeckIdx;
     Hero playerHero;
-
     int mana;
+    boolean endTurn;
+    ArrayList<Card> frontRow;
+    ArrayList<Card> backRow;
 
     public Player(Decks playerDecks, int playerDeckIdx,
                   Hero playerHero) {
@@ -22,6 +24,9 @@ public class Player {
         this.playerDeckIdx = playerDeckIdx;
         this.playerHero = playerHero;
         this.mana = 0;
+        this.endTurn = false;
+        this.frontRow = new ArrayList<>();
+        this.backRow = new ArrayList<>();
     }
 
     public static ArrayList<Card> getPlayerDeck(Player player, int index, Game game) {
@@ -37,9 +42,14 @@ public class Player {
 
     public static ArrayList<Card> Round(ArrayList<Card> deck, Player player, Game game){
         ArrayList<Card> hand = new ArrayList<>();
-        hand.add(deck.get(0));
-        deck.remove(0);
-        player.mana += game.round;
+        if (deck != null) {
+            hand.add(deck.get(0));
+            deck.remove(0);
+        }
+        game.round++;
+        if (player.mana + game.round <= 10) {
+            player.mana += game.round;
+        }
         return hand;
     }
     public Decks getPlayerDecks() {
@@ -67,6 +77,21 @@ public class Player {
         this.playerHero = playerHero;
     }
 
+    public int getMana() {
+        return mana;
+    }
+
+    public void setMana(int mana) {
+        this.mana = mana;
+    }
+
+    public boolean isEndTurn() {
+        return endTurn;
+    }
+
+    public void setEndTurn(boolean endTurn) {
+        this.endTurn = endTurn;
+    }
 
 
 }

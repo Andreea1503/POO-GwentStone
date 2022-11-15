@@ -1,4 +1,19 @@
-[ {
+[ { }, {
   "command" : "getPlayerTurn",
   "output" : 1
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 1,
+  "output" : [ ]
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 2,
+  "output" : [ {
+    "mana" : 1,
+    "attackDamage" : 6,
+    "health" : 2,
+    "description" : "Premium card: Fear him. Your last breath is now.",
+    "colors" : [ "Red", "Blue", "Pink" ],
+    "name" : "Berserker"
+  } ]
 } ]

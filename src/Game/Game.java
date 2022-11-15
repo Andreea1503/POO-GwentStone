@@ -60,19 +60,36 @@ public class Game {
         return listofDeck;
     }
 
-    public static void endTurn(int turn) {
+    public static void endTurn(int turn, int countTurn, Player player1, Player player2) {
         if (turn == 1) {
             turn = 2;
+            player1.endTurn = true;
         } else {
             turn = 1;
+            player2.endTurn = true;
+        }
+
+        countTurn++;
+        if (countTurn == 2) {
+            countTurn = 0;
         }
     }
+
+    public static void unfreezeCards (ArrayList<Card> deck) {
+        for (Card card : deck) {
+            if (card.frozen == true) {
+                card.frozen = false;
+            }
+        }
+    }
+
     // mai bine inca o clasa currentPlayer
 //    static ObjectMapper mapper = new ObjectMapper();
     public static void parseActions(ArrayList<ActionsInput> actionsInputs, Game game, Player player1, Player player2, ArrayNode output) {
         ArrayList<Card> playerOneDeck = Player.getPlayerDeck(player1, player1.getPlayerDeckIdx(), game);
         ArrayList<Card> playerTwoDeck = Player.getPlayerDeck(player2, player2.getPlayerDeckIdx(), game);
         int turn = game.getStartingPlayer();
+        int countTurn = 0;
 
         ArrayList<Card> playerOneHand = Player.Round(playerOneDeck, player1, game);
         ArrayList<Card> playerTwoHand = Player.Round(playerTwoDeck, player2, game);
@@ -96,11 +113,54 @@ public class Game {
                 int currentPlayer = turn;
                 Write.writeTurn(action, turn, output);
             } else if (action.getCommand().equals("endPlayerTurn")) {
-                endTurn(turn);
-                game.round++;
+                endTurn(turn, countTurn, player1, player2);
+                if (countTurn == 0 && player1.endTurn && player2.endTurn) {
+                    playerOneHand = Player.Round(playerOneDeck, player1, game);
+                    playerTwoHand = Player.Round(playerTwoDeck, player2, game);
+                    unfreezeCards(playerOneDeck);
+                    unfreezeCards(playerTwoDeck);
+                }
+            } else if (action.getCommand().equals("placeCard")) {
+                if (turn == 1) {
+                    placeCardOnTheTable(playerOneHand, action, output, player1);
+                } else {
+                    placeCardOnTheTable(playerTwoHand, action, output, player2);
+                }
+            } else if (action.getCommand().equals("getCardsInHand")) {
+                if (action.getPlayerIdx() == 1) {
+                    Write.getCardsFromHard(playerOneHand, action, output);
+                } else {
+                    Write.getCardsFromHard(playerTwoHand, action, output);
+                }
             }
         }
     }
+
+
+    public static void placeCardOnTheTable(ArrayList<Card> playerHand, ActionsInput action, ArrayNode output, Player player) {
+        boolean errorOccurred = false;
+
+        for (int i = 0; i < playerHand.size(); i++) {
+            if (action.getHandIdx() == i) {
+                Write.placeCard(playerHand.get(i), output, player, errorOccurred, action);
+                if (!errorOccurred) {
+                    placeCardOnTable(player, playerHand.get(i), playerHand);
+                }
+            }
+        }
+     }
+
+     public static void placeCardOnTable(Player player, Card card, ArrayList<Card> playerHand) {
+         if (card.getName().equals("The Ripper") || card.getName().equals("Miraj") ||
+                 card.getName().equals("Goliath") || card.getName().equals("Warden")) {
+             player.frontRow.add(card);
+             playerHand.remove(card);
+         } else if (card.getName().equals("Sentinel") || card.getName().equals("Berserker") ||
+                 card.getName().equals("The Cursed One") || card.getName().equals("Disciple")) {
+             player.backRow.add(card);
+             playerHand.remove(card);
+         }
+     }
 
     public int getStartingPlayer() {
         return startingPlayer;

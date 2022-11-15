@@ -1,4 +1,34 @@
 [ {
+  "command" : "placeCard",
+  "handIdx" : 0,
+  "error" : "Not enough mana to place card on table."
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 2,
+  "output" : [ {
+    "mana" : 2,
+    "attackDamage" : 0,
+    "health" : 2,
+    "description" : "Premium card: The will of Gods has been spoken, obey and you shall be saved...or not.",
+    "colors" : [ "Green", "Yellow", "Blue" ],
+    "name" : "Disciple"
+  } ]
+}, {
   "command" : "getPlayerTurn",
   "output" : 1
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 1,
+  "output" : [ ]
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 2,
+  "output" : [ {
+    "mana" : 2,
+    "attackDamage" : 0,
+    "health" : 2,
+    "description" : "Premium card: The will of Gods has been spoken, obey and you shall be saved...or not.",
+    "colors" : [ "Green", "Yellow", "Blue" ],
+    "name" : "Disciple"
+  } ]
 } ]

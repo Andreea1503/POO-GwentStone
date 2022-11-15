@@ -1,12 +1,54 @@
 [ {
+  "command" : "placeCard",
+  "handIdx" : 0,
+  "error" : "Cannot place environment card on table."
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 1,
+  "output" : [ {
+    "mana" : 2,
+    "description" : "Standard card: The dragon was unleashed, run for your lives.",
+    "colors" : [ "Blue", "Green", "White" ],
+    "name" : "Firestorm"
+  } ]
+}, {
   "command" : "getPlayerTurn",
   "output" : 1
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 1,
+  "output" : [ {
+    "mana" : 2,
+    "description" : "Standard card: The dragon was unleashed, run for your lives.",
+    "colors" : [ "Blue", "Green", "White" ],
+    "name" : "Firestorm"
+  } ]
 }, {
   "command" : "getPlayerTurn",
   "output" : 1
 }, {
   "command" : "getPlayerTurn",
   "output" : 1
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 2,
+  "output" : [ {
+    "mana" : 3,
+    "attackDamage" : 2,
+    "health" : 7,
+    "description" : "Premium card: No matter how many, his body will fight. Save your breath for the Mountain is strong.",
+    "colors" : [ "Brown", "Black", "Grey" ],
+    "name" : "Goliath"
+  } ]
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 1,
+  "output" : [ {
+    "mana" : 2,
+    "description" : "Standard card: The dragon was unleashed, run for your lives.",
+    "colors" : [ "Blue", "Green", "White" ],
+    "name" : "Firestorm"
+  } ]
 }, {
   "command" : "getPlayerDeck",
   "playerIdx" : 2,

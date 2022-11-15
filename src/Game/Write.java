@@ -60,7 +60,7 @@ public class Write {
 
             ArrayNode arrayNode = mapper.createArrayNode();
             arrayNode.addAll(Arrays.asList(decksOutput));
-
+//
 //            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
 //            System.out.println(decksOutput);
 
@@ -97,8 +97,68 @@ public class Write {
 
             turnOutput.put("output", turn);
 
-//            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(turnOutput)
+//            String json = mapper.writeWithDefaultPrettyPrinter().writeValueAsString(turnOutput)
             output.add(turnOutput);
+        } catch (Exception e) {
+        }
+    }
+
+    public static void placeCard(Card card, ArrayNode output, Player player,
+                                boolean errorOccurred, ActionsInput action) {
+        try {
+            ObjectNode placeCardOutput = mapper.createObjectNode();
+
+            if (card instanceof Environment) {
+                placeCardOutput.put("command", action.getCommand());
+                placeCardOutput.put("handIdx", action.getHandIdx());
+                placeCardOutput.put("error", "Cannot place environment card on table.");
+                errorOccurred = true;
+            } else if (player.getMana() < card.getMana()) {
+                placeCardOutput.put("command", action.getCommand());
+                placeCardOutput.put("handIdx", action.getHandIdx());
+                placeCardOutput.put("error", "Not enough mana to place card on table.");
+                errorOccurred = true;
+            } else if (card.getName().equals("The Ripper") || card.getName().equals("Miraj") ||
+                        card.getName().equals("Goliath") || card.getName().equals("Warden")) {
+                if (player.frontRow.size() >= 5) {
+                    placeCardOutput.put("command", action.getCommand());
+                    placeCardOutput.put("handIdx", action.getHandIdx());
+                    placeCardOutput.put("error", "Cannot place card on table since row is full.");
+                    errorOccurred = true;
+                }
+            } else if (card.getName().equals("Sentinel") || card.getName().equals("Berserker") ||
+                        card.getName().equals("The Cursed One") || card.getName().equals("Disciple")) {
+                if (player.backRow.size() >= 5) {
+                    placeCardOutput.put("command", action.getCommand());
+                    placeCardOutput.put("handIdx", action.getHandIdx());
+                    placeCardOutput.put("error", "Cannot place card on table since row is full.");
+                    errorOccurred = true;
+                }
+            }
+            output.add(placeCardOutput);
+
+        } catch (Exception e) {
+        }
+    }
+
+    public static void getCardsFromHard(ArrayList<Card> hand, ActionsInput action, ArrayNode output) {
+        try {
+            ObjectNode cardFromHand = mapper.createObjectNode();
+
+            cardFromHand.put("command", action.getCommand());
+            cardFromHand.put("playerIdx", action.getPlayerIdx());
+
+            ArrayNode handOut = mapper.createArrayNode();
+
+            for (Card card : hand) {
+                handOut.add(writeCard(card));
+            }
+            cardFromHand.set("output", handOut);
+
+//            ArrayNode arrayNode = mapper.createArrayNode();
+//            arrayNode.addAll(Arrays.asList(cardFromHand));
+
+            output.add(cardFromHand);
         } catch (Exception e) {
         }
     }

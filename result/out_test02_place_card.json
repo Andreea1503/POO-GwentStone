@@ -1,12 +1,57 @@
-[ {
+[ { }, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 2,
+  "output" : [ ]
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 1,
+  "output" : [ {
+    "mana" : 1,
+    "attackDamage" : 1,
+    "health" : 2,
+    "description" : "Premium card: His presence is not known even by ghosts, success at all costs.",
+    "colors" : [ "Black", "White" ],
+    "name" : "Sentinel"
+  } ]
+}, {
   "command" : "getPlayerTurn",
   "output" : 2
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 2,
+  "output" : [ ]
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 1,
+  "output" : [ {
+    "mana" : 1,
+    "attackDamage" : 1,
+    "health" : 2,
+    "description" : "Premium card: His presence is not known even by ghosts, success at all costs.",
+    "colors" : [ "Black", "White" ],
+    "name" : "Sentinel"
+  } ]
 }, {
   "command" : "getPlayerTurn",
   "output" : 2
 }, {
   "command" : "getPlayerTurn",
   "output" : 2
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 2,
+  "output" : [ ]
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 1,
+  "output" : [ {
+    "mana" : 1,
+    "attackDamage" : 1,
+    "health" : 2,
+    "description" : "Premium card: His presence is not known even by ghosts, success at all costs.",
+    "colors" : [ "Black", "White" ],
+    "name" : "Sentinel"
+  } ]
 }, {
   "command" : "getPlayerDeck",
   "playerIdx" : 2,

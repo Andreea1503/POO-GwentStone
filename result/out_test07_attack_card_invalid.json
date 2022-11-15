@@ -1,4 +1,21 @@
-[ {
+[ { }, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 2,
+  "output" : [ ]
+}, {
   "command" : "getPlayerTurn",
   "output" : 2
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 2,
+  "output" : [ ]
+}, {
+  "command" : "getCardsInHand",
+  "playerIdx" : 1,
+  "output" : [ {
+    "mana" : 1,
+    "description" : "Standard card: The days are cold and so are we. We hope we can close our eyes again.",
+    "colors" : [ "White", "Blue" ],
+    "name" : "Winterfell"
+  } ]
 } ]
