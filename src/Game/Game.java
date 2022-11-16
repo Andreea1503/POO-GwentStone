@@ -72,6 +72,8 @@ public class Game {
         countTurn++;
         if (countTurn == 2) {
             countTurn = 0;
+            player1.endTurn = false;
+            player2.endTurn = false;
         }
     }
 
@@ -114,17 +116,21 @@ public class Game {
                 Write.writeTurn(action, turn, output);
             } else if (action.getCommand().equals("endPlayerTurn")) {
                 endTurn(turn, countTurn, player1, player2);
-                if (countTurn == 0 && player1.endTurn && player2.endTurn) {
+                if (countTurn == 0 && !player1.endTurn && !player2.endTurn) {
                     playerOneHand = Player.Round(playerOneDeck, player1, game);
+//                    Write.writeDeck(playerOneHand, action, output);
                     playerTwoHand = Player.Round(playerTwoDeck, player2, game);
+//                    Write.writeDeck(playerTwoHand, action, output);
                     unfreezeCards(playerOneDeck);
                     unfreezeCards(playerTwoDeck);
                 }
             } else if (action.getCommand().equals("placeCard")) {
-                if (turn == 1) {
+                if (turn == 1 && action.getHandIdx() < playerOneHand.size()) {
                     placeCardOnTheTable(playerOneHand, action, output, player1);
-                } else {
+//                    Write.writeDeck(playerOneHand, action, output);
+                } else if (turn == 2 && action.getHandIdx() < playerTwoHand.size()){
                     placeCardOnTheTable(playerTwoHand, action, output, player2);
+//                    Write.writeDeck(playerTwoHand, action, output);
                 }
             } else if (action.getCommand().equals("getCardsInHand")) {
                 if (action.getPlayerIdx() == 1) {

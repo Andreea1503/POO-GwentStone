@@ -16,6 +16,7 @@ public class Player {
     int mana;
     boolean endTurn;
     ArrayList<Card> frontRow;
+
     ArrayList<Card> backRow;
 
     public Player(Decks playerDecks, int playerDeckIdx,
@@ -42,7 +43,7 @@ public class Player {
 
     public static ArrayList<Card> Round(ArrayList<Card> deck, Player player, Game game){
         ArrayList<Card> hand = new ArrayList<>();
-        if (deck != null) {
+        if (deck.size() > 0) {
             hand.add(deck.get(0));
             deck.remove(0);
         }
@@ -52,6 +53,8 @@ public class Player {
         }
         return hand;
     }
+
+
     public Decks getPlayerDecks() {
         return playerDecks;
     }
@@ -93,5 +96,20 @@ public class Player {
         this.endTurn = endTurn;
     }
 
+    public ArrayList<Card> getFrontRow() {
+        return frontRow;
+    }
+
+    public void setFrontRow(ArrayList<Card> frontRow) {
+        this.frontRow = frontRow;
+    }
+
+    public ArrayList<Card> getBackRow() {
+        return backRow;
+    }
+
+    public void setBackRow(ArrayList<Card> backRow) {
+        this.backRow = backRow;
+    }
 
 }
