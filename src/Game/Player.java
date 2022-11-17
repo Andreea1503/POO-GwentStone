@@ -13,11 +13,12 @@ public class Player {
     Decks playerDecks;
     int playerDeckIdx;
     Hero playerHero;
-    int mana;
+    Integer mana;
     boolean endTurn;
     ArrayList<Card> frontRow;
-
     ArrayList<Card> backRow;
+
+    ArrayList<Card> playerHand;
 
     public Player(Decks playerDecks, int playerDeckIdx,
                   Hero playerHero) {
@@ -28,6 +29,7 @@ public class Player {
         this.endTurn = false;
         this.frontRow = new ArrayList<>();
         this.backRow = new ArrayList<>();
+        this.playerHand = new ArrayList<>();
     }
 
     public static ArrayList<Card> getPlayerDeck(Player player, int index, Game game) {
@@ -41,20 +43,23 @@ public class Player {
         return deck;
     }
 
-    public static ArrayList<Card> Round(ArrayList<Card> deck, Player player, Game game){
-        ArrayList<Card> hand = new ArrayList<>();
+    public static ArrayList<Card> drawCard(ArrayList<Card> deck, Player player, Game game){
         if (deck.size() > 0) {
-            hand.add(deck.get(0));
+            player.playerHand.add(deck.get(0));
             deck.remove(0);
         }
-        game.round++;
-        if (player.mana + game.round <= 10) {
-            player.mana += game.round;
-        }
-        return hand;
+        return player.playerHand;
     }
 
-
+    public static void nextRound(Player player1, Player player2, Game game) {
+        if (player1.mana <= 10) {
+            player1.mana += game.round;
+        }
+        if(player2.mana <= 10) {
+            player2.mana += game.round;
+        }
+        game.round++;
+    }
     public Decks getPlayerDecks() {
         return playerDecks;
     }
@@ -110,6 +115,14 @@ public class Player {
 
     public void setBackRow(ArrayList<Card> backRow) {
         this.backRow = backRow;
+    }
+
+    public ArrayList<Card> getPlayerHand() {
+        return playerHand;
+    }
+
+    public void setPlayerHand(ArrayList<Card> playerHand) {
+        this.playerHand = playerHand;
     }
 
 }

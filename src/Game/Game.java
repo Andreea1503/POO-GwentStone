@@ -14,14 +14,16 @@ import java.util.ArrayList;
 public class Game {
 //    public static int firstPlayer = 1;
 //    public static int secondPlayer = 2;
-    int startingPlayer;
-    int shuffleSeed;
-    int round;
+    Integer startingPlayer;
+    Integer shuffleSeed;
+    Integer round;
+    Integer turn;
 
     public Game(int startingPlayer, int shuffleSeed) {
         this.startingPlayer = startingPlayer;
         this.shuffleSeed = shuffleSeed;
         this.round = 1;
+        this.turn = 0;
     }
 
     public static Decks createDecks(DecksInput decksInput) {
@@ -60,18 +62,21 @@ public class Game {
         return listofDeck;
     }
 
-    public static void endTurn(int turn, int countTurn, Player player1, Player player2) {
-        if (turn == 1) {
-            turn = 2;
+    public static void endTurn(ArrayList<Card> playerOneDeck, ArrayList<Card> playerTwoDeck, Player player1, Player player2, Game game) {
+        if (game.turn == 1) {
+            game.turn = 2;
             player1.endTurn = true;
+            unfreezeCards(playerOneDeck);
         } else {
-            turn = 1;
+            game.turn = 1;
             player2.endTurn = true;
+            unfreezeCards(playerTwoDeck);
         }
 
-        countTurn++;
-        if (countTurn == 2) {
-            countTurn = 0;
+        if (player1.endTurn && player2.endTurn) {
+            Player.drawCard(playerOneDeck, player1, game);
+            Player.drawCard(playerTwoDeck, player2, game);
+            Player.nextRound(player1, player2, game);
             player1.endTurn = false;
             player2.endTurn = false;
         }
@@ -90,11 +95,13 @@ public class Game {
     public static void parseActions(ArrayList<ActionsInput> actionsInputs, Game game, Player player1, Player player2, ArrayNode output) {
         ArrayList<Card> playerOneDeck = Player.getPlayerDeck(player1, player1.getPlayerDeckIdx(), game);
         ArrayList<Card> playerTwoDeck = Player.getPlayerDeck(player2, player2.getPlayerDeckIdx(), game);
-        int turn = game.getStartingPlayer();
-        int countTurn = 0;
+        game.turn = game.getStartingPlayer();
 
-        ArrayList<Card> playerOneHand = Player.Round(playerOneDeck, player1, game);
-        ArrayList<Card> playerTwoHand = Player.Round(playerTwoDeck, player2, game);
+        player1.playerHand = Player.drawCard(playerOneDeck, player1, game);
+        player2.playerHand = Player.drawCard(playerTwoDeck, player2, game);
+        Player.nextRound(player1, player2, game);
+//        System.out.println(playerOneDeck);
+//        System.out.println(playerTwoDeck);
 
         for (ActionsInput action : actionsInputs) {
             if (action.getCommand().equals("getPlayerDeck")) {
@@ -112,59 +119,60 @@ public class Game {
                     Write.outputCard(hero, action, output);
                 }
             } else if (action.getCommand().equals("getPlayerTurn")) {
-                int currentPlayer = turn;
-                Write.writeTurn(action, turn, output);
+                Write.getPlayerTurn(action, game.turn, output);
             } else if (action.getCommand().equals("endPlayerTurn")) {
-                endTurn(turn, countTurn, player1, player2);
-                if (countTurn == 0 && !player1.endTurn && !player2.endTurn) {
-                    playerOneHand = Player.Round(playerOneDeck, player1, game);
-//                    Write.writeDeck(playerOneHand, action, output);
-                    playerTwoHand = Player.Round(playerTwoDeck, player2, game);
-//                    Write.writeDeck(playerTwoHand, action, output);
-                    unfreezeCards(playerOneDeck);
-                    unfreezeCards(playerTwoDeck);
-                }
+                endTurn(playerOneDeck, playerTwoDeck, player1, player2, game);
             } else if (action.getCommand().equals("placeCard")) {
-                if (turn == 1 && action.getHandIdx() < playerOneHand.size()) {
-                    placeCardOnTheTable(playerOneHand, action, output, player1);
-//                    Write.writeDeck(playerOneHand, action, output);
-                } else if (turn == 2 && action.getHandIdx() < playerTwoHand.size()){
-                    placeCardOnTheTable(playerTwoHand, action, output, player2);
-//                    Write.writeDeck(playerTwoHand, action, output);
+                if (game.turn == 1 && action.getHandIdx() < player1.playerHand.size() && player1.playerHand.size() > 0) {
+                    placeCardOnTheTable(action, output, player1);
+//                    System.out.println(player1.getPlayerHand());
+                } else if (game.turn == 2 && action.getHandIdx() < player2.playerHand.size() && player2.playerHand.size() > 0){
+                    placeCardOnTheTable(action, output, player2);
+//                    System.out.println(player2.getPlayerHand());
                 }
             } else if (action.getCommand().equals("getCardsInHand")) {
                 if (action.getPlayerIdx() == 1) {
-                    Write.getCardsFromHard(playerOneHand, action, output);
+                    Write.getCardsFromHand(player1.playerHand, action, output);
                 } else {
-                    Write.getCardsFromHard(playerTwoHand, action, output);
+                    Write.getCardsFromHand(player2.playerHand, action, output);
                 }
+            } else if (action.getCommand().equals("getPlayerMana")) {
+                if (action.getPlayerIdx() == 1) {
+                    Write.getPlayerMana(action, player1.getMana(), output);
+                } else {
+                    Write.getPlayerMana(action, player2.getMana(), output);
+                }
+            } else if (action.getCommand().equals("getCardsOnTable")) {
+                Write.getCardsOnTheTable(player1, player2, action, output);
             }
         }
     }
 
 
-    public static void placeCardOnTheTable(ArrayList<Card> playerHand, ActionsInput action, ArrayNode output, Player player) {
+    public static void placeCardOnTheTable(ActionsInput action, ArrayNode output, Player player) {
         boolean errorOccurred = false;
 
-        for (int i = 0; i < playerHand.size(); i++) {
+        for (int i = 0; i < player.playerHand.size(); i++) {
             if (action.getHandIdx() == i) {
-                Write.placeCard(playerHand.get(i), output, player, errorOccurred, action);
+                Write.placeCard(player.playerHand.get(i), output, player, errorOccurred, action);
                 if (!errorOccurred) {
-                    placeCardOnTable(player, playerHand.get(i), playerHand);
+                    placeCardOnTable(player, player.playerHand.get(i));
                 }
             }
         }
      }
 
-     public static void placeCardOnTable(Player player, Card card, ArrayList<Card> playerHand) {
+     public static void placeCardOnTable(Player player, Card card) {
          if (card.getName().equals("The Ripper") || card.getName().equals("Miraj") ||
                  card.getName().equals("Goliath") || card.getName().equals("Warden")) {
+             player.mana -= card.mana;
              player.frontRow.add(card);
-             playerHand.remove(card);
+             player.playerHand.remove(card);
          } else if (card.getName().equals("Sentinel") || card.getName().equals("Berserker") ||
                  card.getName().equals("The Cursed One") || card.getName().equals("Disciple")) {
+             player.mana -= card.mana;
              player.backRow.add(card);
-             playerHand.remove(card);
+             player.playerHand.remove(card);
          }
      }
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Card {
     public static int maxIndex = 5;
-    int mana;
+    Integer mana;
     int attackDamage;
     int health;
     String description;

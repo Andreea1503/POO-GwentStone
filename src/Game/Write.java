@@ -88,14 +88,14 @@ public class Write {
         }
     }
 
-    public static void writeTurn(ActionsInput action, int turn, ArrayNode output) {
+    public static void getPlayerTurn(ActionsInput action, int command, ArrayNode output) {
         // create json objects
         try {
             ObjectNode turnOutput = mapper.createObjectNode();
 
             turnOutput.put("command", action.getCommand());
 
-            turnOutput.put("output", turn);
+            turnOutput.put("output", command);
 
 //            String json = mapper.writeWithDefaultPrettyPrinter().writeValueAsString(turnOutput)
             output.add(turnOutput);
@@ -106,42 +106,48 @@ public class Write {
     public static void placeCard(Card card, ArrayNode output, Player player,
                                 boolean errorOccurred, ActionsInput action) {
         try {
-            ObjectNode placeCardOutput = mapper.createObjectNode();
 
             if (card instanceof Environment) {
+                ObjectNode placeCardOutput = mapper.createObjectNode();
                 placeCardOutput.put("command", action.getCommand());
                 placeCardOutput.put("handIdx", action.getHandIdx());
                 placeCardOutput.put("error", "Cannot place environment card on table.");
                 errorOccurred = true;
+                output.add(placeCardOutput);
             } else if (player.getMana() < card.getMana()) {
+                ObjectNode placeCardOutput = mapper.createObjectNode();
                 placeCardOutput.put("command", action.getCommand());
                 placeCardOutput.put("handIdx", action.getHandIdx());
                 placeCardOutput.put("error", "Not enough mana to place card on table.");
                 errorOccurred = true;
+                output.add(placeCardOutput);
             } else if (card.getName().equals("The Ripper") || card.getName().equals("Miraj") ||
                         card.getName().equals("Goliath") || card.getName().equals("Warden")) {
                 if (player.frontRow.size() >= 5) {
+                    ObjectNode placeCardOutput = mapper.createObjectNode();
                     placeCardOutput.put("command", action.getCommand());
                     placeCardOutput.put("handIdx", action.getHandIdx());
                     placeCardOutput.put("error", "Cannot place card on table since row is full.");
                     errorOccurred = true;
+                    output.add(placeCardOutput);
                 }
             } else if (card.getName().equals("Sentinel") || card.getName().equals("Berserker") ||
                         card.getName().equals("The Cursed One") || card.getName().equals("Disciple")) {
                 if (player.backRow.size() >= 5) {
+                    ObjectNode placeCardOutput = mapper.createObjectNode();
                     placeCardOutput.put("command", action.getCommand());
                     placeCardOutput.put("handIdx", action.getHandIdx());
                     placeCardOutput.put("error", "Cannot place card on table since row is full.");
                     errorOccurred = true;
+                    output.add(placeCardOutput);
                 }
             }
-            output.add(placeCardOutput);
 
         } catch (Exception e) {
         }
     }
 
-    public static void getCardsFromHard(ArrayList<Card> hand, ActionsInput action, ArrayNode output) {
+    public static void getCardsFromHand(ArrayList<Card> hand, ActionsInput action, ArrayNode output) {
         try {
             ObjectNode cardFromHand = mapper.createObjectNode();
 
@@ -159,6 +165,75 @@ public class Write {
 //            arrayNode.addAll(Arrays.asList(cardFromHand));
 
             output.add(cardFromHand);
+        } catch (Exception e) {
+        }
+    }
+
+    public static void getCardsOnTheTable(Player player1, Player player2, ActionsInput action, ArrayNode output) {
+        try {
+            ObjectNode decksOutput = mapper.createObjectNode();
+
+            decksOutput.put("command", action.getCommand());
+
+            ArrayNode deckOut = mapper.createArrayNode();
+
+            ArrayNode backRowPlayer2 = mapper.createArrayNode();
+            for (Card card : player2.backRow) {
+                backRowPlayer2.add(writeCard(card));
+            }
+            deckOut.add(backRowPlayer2);
+
+            ArrayNode frontRowPlayer2 = mapper.createArrayNode();
+            for (Card card : player2.frontRow) {
+                frontRowPlayer2.add(writeCard(card));
+            }
+            deckOut.add(frontRowPlayer2);
+
+            ArrayNode frontRowPlayer1 = mapper.createArrayNode();
+            for (Card card : player1.frontRow) {
+                frontRowPlayer1.add(writeCard(card));
+            }
+            deckOut.add(frontRowPlayer1);
+
+            ArrayNode backRowPlayer1 = mapper.createArrayNode();
+            for (Card card : player1.backRow) {
+                backRowPlayer1.add(writeCard(card));
+            }
+            deckOut.add(backRowPlayer1);
+
+            decksOutput.set("output", deckOut);
+
+            ArrayNode arrayNode = mapper.createArrayNode();
+            arrayNode.addAll(Arrays.asList(decksOutput));
+//
+//            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
+//            System.out.println(decksOutput);
+
+//            return decksOutput;
+            output.add(decksOutput);
+        } catch (Exception e) {
+        }
+    }
+
+//    static void printCards(ArrayList<Card> row) {
+////        for (Card card : row) {
+////
+////        }
+////    }
+
+    public static void getPlayerMana(ActionsInput action, int command, ArrayNode output) {
+        // create json objects
+        try {
+            ObjectNode manaOutput = mapper.createObjectNode();
+
+            manaOutput.put("command", action.getCommand());
+
+            manaOutput.put("playerIdx", action.getPlayerIdx());
+
+            manaOutput.put("output", command);
+
+//            String json = mapper.writeWithDefaultPrettyPrinter().writeValueAsString(turnOutput)
+            output.add(manaOutput);
         } catch (Exception e) {
         }
     }
