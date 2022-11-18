@@ -144,6 +144,22 @@ public class Game {
                 }
             } else if (action.getCommand().equals("getCardsOnTable")) {
                 Write.getCardsOnTheTable(player1, player2, action, output);
+            } else if (action.getCommand().equals("useEnvironmentCard")) {
+                if (game.turn == 1) {
+                    Write.useEnvironmentCard(player1.getPlayerHand(), player1, player2, action, output, game);
+                } else {
+                    Write.useEnvironmentCard(player2.getPlayerHand(), player1, player2, action, output, game);
+                }
+            } else if (action.getCommand().equals("getCardAtPosition")) {
+                Write.getThePositionOfTheCard(player1, player2, action, output);
+            } else if (action.getCommand().equals("getEnvironmentCardsInHand")) {
+                if (action.getPlayerIdx() == 1) {
+                    Write.getEnvironmentCardsInHand(player1, action, output);
+                } else {
+                    Write.getEnvironmentCardsInHand(player2, action, output);
+                }
+            } else if (action.getCommand().equals("getFrozenCardsOnTable")) {
+                Write.getFrozenCardsOnTheTable(player1, player2, action, output);
             }
         }
     }
@@ -152,11 +168,11 @@ public class Game {
     public static void placeCardOnTheTable(ActionsInput action, ArrayNode output, Player player) {
         boolean errorOccurred = false;
 
-        for (int i = 0; i < player.playerHand.size(); i++) {
-            if (action.getHandIdx() == i) {
-                Write.placeCard(player.playerHand.get(i), output, player, errorOccurred, action);
+        for (int i = 0; i < player.getPlayerHand().size(); i++) {
+            if (action.getHandIdx() == i && action.getHandIdx() < player.getPlayerHand().size()) {
+                 errorOccurred = Write.placeCard(player.getPlayerHand().get(i), output, player, errorOccurred, action);
                 if (!errorOccurred) {
-                    placeCardOnTable(player, player.playerHand.get(i));
+                    placeCardOnTable(player, player.getPlayerHand().get(i));
                 }
             }
         }

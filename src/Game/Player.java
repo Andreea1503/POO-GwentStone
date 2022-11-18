@@ -52,12 +52,18 @@ public class Player {
     }
 
     public static void nextRound(Player player1, Player player2, Game game) {
-        if (player1.mana <= 10) {
+        if (game.round >= 10) {
+            player1.mana += 10;
+        } else {
             player1.mana += game.round;
         }
-        if(player2.mana <= 10) {
+
+        if (game.round >= 10) {
+            player2.mana += 10;
+        } else {
             player2.mana += game.round;
         }
+
         game.round++;
     }
     public Decks getPlayerDecks() {

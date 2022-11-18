@@ -103,7 +103,7 @@ public class Write {
         }
     }
 
-    public static void placeCard(Card card, ArrayNode output, Player player,
+    public static boolean placeCard(Card card, ArrayNode output, Player player,
                                 boolean errorOccurred, ActionsInput action) {
         try {
 
@@ -112,15 +112,15 @@ public class Write {
                 placeCardOutput.put("command", action.getCommand());
                 placeCardOutput.put("handIdx", action.getHandIdx());
                 placeCardOutput.put("error", "Cannot place environment card on table.");
-                errorOccurred = true;
                 output.add(placeCardOutput);
+                return true;
             } else if (player.getMana() < card.getMana()) {
                 ObjectNode placeCardOutput = mapper.createObjectNode();
                 placeCardOutput.put("command", action.getCommand());
                 placeCardOutput.put("handIdx", action.getHandIdx());
                 placeCardOutput.put("error", "Not enough mana to place card on table.");
-                errorOccurred = true;
                 output.add(placeCardOutput);
+                return true;
             } else if (card.getName().equals("The Ripper") || card.getName().equals("Miraj") ||
                         card.getName().equals("Goliath") || card.getName().equals("Warden")) {
                 if (player.frontRow.size() >= 5) {
@@ -130,6 +130,7 @@ public class Write {
                     placeCardOutput.put("error", "Cannot place card on table since row is full.");
                     errorOccurred = true;
                     output.add(placeCardOutput);
+                    return true;
                 }
             } else if (card.getName().equals("Sentinel") || card.getName().equals("Berserker") ||
                         card.getName().equals("The Cursed One") || card.getName().equals("Disciple")) {
@@ -140,11 +141,14 @@ public class Write {
                     placeCardOutput.put("error", "Cannot place card on table since row is full.");
                     errorOccurred = true;
                     output.add(placeCardOutput);
+                    return true;
                 }
             }
 
         } catch (Exception e) {
         }
+
+        return false;
     }
 
     public static void getCardsFromHand(ArrayList<Card> hand, ActionsInput action, ArrayNode output) {
@@ -236,5 +240,186 @@ public class Write {
             output.add(manaOutput);
         } catch (Exception e) {
         }
+    }
+
+    public static void getThePositionOfTheCard(Player player1, Player player2, ActionsInput action, ArrayNode output) {
+            ObjectNode positionOfCard = mapper.createObjectNode();
+
+            positionOfCard.put("command", action.getCommand());
+
+            if (action.getX() == 0) {
+                if (player2.getBackRow().size() > 0 && action.getY() < player2.getBackRow().size()) {
+                    positionOfCard.set("output", writeCard(player2.getBackRow().get(action.getY())));
+                } else {
+                    positionOfCard.put("output","No card available at that position." );
+                }
+            } else if (action.getX() == 1) {
+                if (player2.getFrontRow().size() > 0 && action.getY() < player2.getFrontRow().size()) {
+                    positionOfCard.set("output", writeCard(player2.getFrontRow().get(action.getY())));
+                } else {
+                    positionOfCard.put("output","No card available at that position." );
+                }
+            } else if (action.getX() == 2) {
+                if (player1.getFrontRow().size() > 0 && action.getY() < player1.getFrontRow().size()) {
+                    positionOfCard.set("output", writeCard(player1.getFrontRow().get(action.getY())));
+                } else {
+                    positionOfCard.put("output","No card available at that position." );
+                }
+            } else {
+                if (player1.getBackRow().size() > 0 && action.getY() < player1.getBackRow().size()) {
+                    positionOfCard.set("output", writeCard(player1.getBackRow().get(action.getY())));
+                } else {
+                    positionOfCard.put("output","No card available at that position." );
+                }
+            }
+
+//            String json = mapper.writeWithDefaultPrettyPrinter().writeValueAsString(turnOutput)
+            output.add(positionOfCard);
+    }
+
+    public static void getEnvironmentCardsInHand(Player player, ActionsInput action, ArrayNode output) {
+        try {
+            ObjectNode environmentCardInHand = mapper.createObjectNode();
+
+            environmentCardInHand.put("command", action.getCommand());
+
+            environmentCardInHand.put("playerIdx", action.getPlayerIdx());
+
+            ArrayNode playerHand = mapper.createArrayNode();
+
+            for (Card card : player.getPlayerHand()) {
+                if (card instanceof Environment) {
+                    playerHand.add(writeCard(card));
+                }
+            }
+            environmentCardInHand.set("output", playerHand);
+
+//            manaOutput.put("output", command);
+
+//            String json = mapper.writeWithDefaultPrettyPrinter().writeValueAsString(turnOutput)
+            output.add(environmentCardInHand);
+        } catch (Exception e) {
+        }
+    }
+
+    public static void environmentCardError(ActionsInput action, ArrayNode output, String error) {
+        ObjectNode placeCardOutput = mapper.createObjectNode();
+        placeCardOutput.put("command", action.getCommand());
+        placeCardOutput.put("handIdx", action.getHandIdx());
+        placeCardOutput.put("affectedRow", action.getAffectedRow());
+        placeCardOutput.put("error", error);
+        output.add(placeCardOutput);
+    }
+
+    public static ArrayList<Card> getRow(Player player1, Player player2, Integer affectedRow) {
+        if (affectedRow == 0) {
+            return player2.getBackRow();
+        } else if (affectedRow == 1) {
+            return player2.getFrontRow();
+        } else if (affectedRow == 2) {
+            return player1.getFrontRow();
+        } else if (affectedRow == 3) {
+            return player1.getBackRow();
+        }
+        return null;
+    }
+
+    public static Player getTurn(Player player1, Player player2, Game game) {
+        if (game.turn == 1) {
+            return player1;
+        } else {
+            return player2;
+        }
+    }
+    public static void useEnvironmentCard(ArrayList<Card> hand, Player player1, Player player2, ActionsInput action, ArrayNode output, Game game) {
+        if (!(hand.get(action.getHandIdx()) instanceof Environment)) {
+            environmentCardError(action, output, "Chosen card is not of type environment.");
+            return;
+        }
+
+        if (game.turn == 1 && player1.getMana() < hand.get(action.getHandIdx()).getMana()) {
+            environmentCardError(action, output, "Not enough mana to use environment card.");
+            return;
+        } else if (game.turn == 2 && player2.getMana() < hand.get(action.getHandIdx()).getMana()) {
+            environmentCardError(action, output, "Not enough mana to use environment card.");
+            return;
+        }
+
+        if ((action.getAffectedRow() == 0 || action.getAffectedRow() == 1) && game.turn != 1) {
+            environmentCardError(action, output, "Chosen row does not belong to the enemy.");
+            return;
+        } else if ((action.getAffectedRow() == 2 || action.getAffectedRow() == 3) && game.turn != 2) {
+            environmentCardError(action, output, "Chosen row does not belong to the enemy.");
+            return;
+        }
+
+        if (hand.get(action.getHandIdx()).getName().equals("Heart Hound") && action.getAffectedRow() == 0 && player1.getBackRow().size() == 5) {
+            environmentCardError(action, output, "Cannot steal enemy card since the player's row is full.");
+            return;
+        } else if (hand.get(action.getHandIdx()).getName().equals("Heart Hound") && action.getAffectedRow() == 1 && player1.getFrontRow().size() == 5) {
+            environmentCardError(action, output, "Cannot steal enemy card since the player's row is full.");
+            return;
+        } else if (hand.get(action.getHandIdx()).getName().equals("Heart Hound") && action.getAffectedRow() == 2 && player2.getFrontRow().size() == 5) {
+            environmentCardError(action, output, "Cannot steal enemy card since the player's row is full.");
+            return;
+        } else if (hand.get(action.getHandIdx()).getName().equals("Heart Hound") && action.getAffectedRow() == 3 && player2.getBackRow().size() == 5) {
+            environmentCardError(action, output, "Cannot steal enemy card since the player's row is full.");
+            return;
+        }
+
+        Environment environmentCard = new Environment();
+
+        if (hand.get(action.getHandIdx()).getName().equals("Firestorm")) {
+            environmentCard.fireStorm(getRow(player1, player2, action.getAffectedRow()));
+            Player player = getTurn(player1, player2, game);
+            player.mana -= hand.get(action.getHandIdx()).mana;
+            hand.remove(action.getHandIdx());
+        } else if (hand.get(action.getHandIdx()).getName().equals("Winterfell")) {
+            environmentCard.winterFell(getRow(player1, player2, action.getAffectedRow()));
+            Player player = getTurn(player1, player2, game);
+            player.mana -= hand.get(action.getHandIdx()).mana;
+            hand.remove(action.getHandIdx());
+        } else if (hand.get(action.getHandIdx()).getName().equals("Heart Hound")) {
+            environmentCard.heartHound(getRow(player1, player2, action.getAffectedRow()), getRow(player1, player2, (3 - action.getAffectedRow())));
+            Player player = getTurn(player1, player2, game);
+            player.mana -= hand.get(action.getHandIdx()).mana;
+            hand.remove(action.getHandIdx());
+        }
+    }
+
+    public static void getFrozenCardsOnTheTable(Player player1, Player player2, ActionsInput action, ArrayNode output) {
+        ObjectNode frozenCard = mapper.createObjectNode();
+
+        frozenCard.put("command", action.getCommand());
+
+        ArrayNode frozenCards = mapper.createArrayNode();
+
+        for (Card card : player2.backRow) {
+            if (card.frozen == true) {
+                frozenCards.add(writeCard(card));
+            }
+        }
+
+        for (Card card : player2.frontRow) {
+            if (card.frozen == true) {
+                frozenCards.add(writeCard(card));
+            }
+        }
+
+        for (Card card : player1.frontRow) {
+            if (card.frozen == true) {
+                frozenCards.add(writeCard(card));
+            }
+        }
+
+        for (Card card : player1.backRow) {
+            if (card.frozen == true) {
+                frozenCards.add(writeCard(card));
+            }
+        }
+
+        frozenCard.set("output", frozenCards);
+
+        output.add(frozenCard);
     }
 }

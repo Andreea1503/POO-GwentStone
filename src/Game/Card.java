@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class Card {
     public static int maxIndex = 5;
     Integer mana;
-    int attackDamage;
-    int health;
+    Integer attackDamage;
+    Integer health;
     String description;
     ArrayList<String> colors = new ArrayList<>();
     String name;
