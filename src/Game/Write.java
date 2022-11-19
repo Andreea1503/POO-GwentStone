@@ -579,25 +579,25 @@ public class Write {
         attackCardOutput.put("error", error);
         output.add(attackCardOutput);
     }
-    public boolean useAttackHero(Player player1, Player player2, Game game, ActionsInput action, ArrayNode output) {
+    public Player useAttackHero(Player player1, Player player2, Game game, ActionsInput action, ArrayNode output) {
         Player player = new Player();
         Card attackerCard = player.getPlayerCard(player1, player2, action.getCardAttacker().getX(), action.getCardAttacker().getY());
         Card playerHero;
 
-        if (game.getTurn() == 1) {
-            playerHero = player2.getPlayerHero();
-        } else {
+        if (action.getCardAttacker().getX() == 0 || action.getCardAttacker().getX() == 1) {
             playerHero = player1.getPlayerHero();
+        } else {
+            playerHero = player2.getPlayerHero();
         }
 
         if (attackerCard.isFrozen()) {
             attackHeroError(action, output, "Attacker card is frozen.");
-            return false;
+            return null;
         }
 
         if (attackerCard.isAttack() || attackerCard.isUsedAbility()) {
             attackHeroError(action, output, "Attacker card has already attacked this turn.");
-            return false;
+            return null;
         }
 
         ArrayList<Card> searchForTank = new ArrayList<>();
@@ -617,22 +617,24 @@ public class Write {
         }
         if (isTank) {
             attackHeroError(action, output, "Attacked card is not of type 'Tank'.");
-            return false;
+            return null;
         }
 
         Hero hero = new Hero();
         boolean isDead = hero.attackHero(playerHero, attackerCard);
         if (isDead) {
             ObjectNode gameEnded = mapper.createObjectNode();
-            if (game.turn == 1) {
-                gameEnded.put("gameEnded", "Player one killed the enemy hero.");
-            } else {
+            if (action.getCardAttacker().getX() == 0 || action.getCardAttacker().getX() == 1) {
                 gameEnded.put("gameEnded", "Player two killed the enemy hero.");
+                output.add(gameEnded);
+                return player2;
+            } else {
+                gameEnded.put("gameEnded", "Player one killed the enemy hero.");
+                output.add(gameEnded);
+                return player1;
             }
-            output.add(gameEnded);
-            return true;
         }
-        return false;
+        return null;
     }
 
     public void heroAbilityError(ActionsInput action, ArrayNode output, String error) {

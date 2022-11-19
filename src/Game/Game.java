@@ -102,13 +102,10 @@ public class Game {
 
     // mai bine inca o clasa currentPlayer
 //    static ObjectMapper mapper = new ObjectMapper();
-    public static void parseActions(ArrayList<ActionsInput> actionsInputs, Game game, Player player1, Player player2, ArrayNode output) {
+    public void parseActions(ArrayList<ActionsInput> actionsInputs, Game game, Player player1, Player player2, ArrayNode output, ArrayList<Integer> wins) {
         ArrayList<Card> playerOneDeck = Player.getPlayerDeck(player1, player1.getPlayerDeckIdx(), game);
         ArrayList<Card> playerTwoDeck = Player.getPlayerDeck(player2, player2.getPlayerDeckIdx(), game);
         game.turn = game.getStartingPlayer();
-        Integer playerOneWins = 0;
-        Integer playerTwoWins = 0;
-        Integer totalOfGames = 0;
 
         player1.playerHand = Player.drawCard(playerOneDeck, player1, game);
         player2.playerHand = Player.drawCard(playerTwoDeck, player2, game);
@@ -179,20 +176,22 @@ public class Game {
             } else if (action.getCommand().equals("cardUsesAbility")) {
                 Write.useCardAbility(player1, player2, game, action, output);
             } else if (action.getCommand().equals("useAttackHero")) {
-                boolean playerWins = Write.useAttackHero(player1, player2, game, action, output);
-                if (game.turn == 1 && playerWins) {
-                    playerOneWins++;
-                } else if (game.turn == 2 && playerWins) {
-                    playerTwoWins++;
+                Player playerWins = Write.useAttackHero(player1, player2, game, action, output);
+                if (playerWins != null) {
+                    if (playerWins.equals(player1)) {
+                        wins.set(0, wins.get(0) + 1);
+                    } else if (playerWins.equals(player2)) {
+                        wins.set(1, wins.get(1) + 1);
+                    }
                 }
             } else if (action.getCommand().equals("useHeroAbility")) {
                 Write.useHeroAbility(player1, player2, game, action, output);
             } else if (action.getCommand().equals("getPlayerOneWins")) {
-                Write.playerWins(playerOneWins, action, output);
+                Write.playerWins(wins.get(0), action, output);
             } else if (action.getCommand().equals("getPlayerTwoWins")) {
-                Write.playerWins(playerTwoWins, action, output);
+                Write.playerWins(wins.get(1), action, output);
             } else if (action.getCommand().equals("getTotalGamesPlayed")) {
-                totalOfGames = playerOneWins + playerTwoWins;
+                int totalOfGames = wins.get(0) + wins.get(1);
                 Write.playerWins(totalOfGames, action, output);
             }
         }

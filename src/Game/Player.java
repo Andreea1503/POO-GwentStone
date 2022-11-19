@@ -17,7 +17,6 @@ public class Player {
     boolean endTurn;
     ArrayList<Card> frontRow;
     ArrayList<Card> backRow;
-
     ArrayList<Card> playerHand;
 
     public Player() {

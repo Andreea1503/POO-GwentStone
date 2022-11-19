@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import fileio.*;
 
+import javax.lang.model.type.ArrayType;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -87,6 +88,9 @@ public final class Main {
 
         ArrayList<GameInput> input = inputData.getGames();
         Game game = null;
+        ArrayList<Integer> wins = new ArrayList<>();
+        wins.add(0);
+        wins.add(0);
         for (GameInput gameInput : input) {
             StartGameInput stGameInput = gameInput.getStartGame();
             Hero playerOneHero = new Hero(stGameInput.getPlayerOneHero());
@@ -98,7 +102,7 @@ public final class Main {
                                         playerTwoHero);
             game = new Game(stGameInput.getStartingPlayer(), stGameInput.getShuffleSeed());
             ArrayList<ActionsInput> actionsInputs = gameInput.getActions();
-            Game.parseActions(actionsInputs, game, player1, player2, output);
+            game.parseActions(actionsInputs, game, player1, player2, output, wins);
         }
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
