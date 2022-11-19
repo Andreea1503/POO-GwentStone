@@ -97,12 +97,9 @@ public final class Main {
             Player player2 = new Player(Game.createDecks(decksInputPlayer2), stGameInput.getPlayerTwoDeckIdx(),
                                         playerTwoHero);
             game = new Game(stGameInput.getStartingPlayer(), stGameInput.getShuffleSeed());
-//            System.out.println(game);
             ArrayList<ActionsInput> actionsInputs = gameInput.getActions();
             Game.parseActions(actionsInputs, game, player1, player2, output);
         }
-
-
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);

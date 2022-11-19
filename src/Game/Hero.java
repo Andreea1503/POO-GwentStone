@@ -7,8 +7,12 @@ import java.util.ArrayList;
 public class Hero extends Card{
     public static int maxHealth = 30;
     public static int heroShifts = 1;
+
     boolean attack;
 
+    public Hero() {
+
+    }
     public Hero(CardInput card) {
         this.mana = card.getMana();
         this.attackDamage = card.getAttackDamage();
@@ -19,8 +23,8 @@ public class Hero extends Card{
         this.attack = false;
     }
 
-    public void subZero(ArrayList<Card> row) { //Lord Royce
-        Card maxAttackCard = null;
+    public void subZero(ArrayList<Card> row, Hero playerHero) { //Lord Royce
+        Card maxAttackCard = row.get(0);
         int maxAttack = 0;
         for (Card card : row) {
             if (card.attackDamage > maxAttack) {
@@ -29,11 +33,11 @@ public class Hero extends Card{
             }
         }
         maxAttackCard.frozen = true;
-        attack = true;
+        playerHero.attack = true;
     }
 
-    public void lowBlow(ArrayList<Card> row) { //empress
-        Card maxHealthCard = null;
+    public void lowBlow(ArrayList<Card> row, Hero playerHero) { //empress
+        Card maxHealthCard = row.get(0);
         int maxHealth = 0;
         for (Card card : row) {
             if (card.health > maxHealth) {
@@ -42,22 +46,34 @@ public class Hero extends Card{
             }
         }
         row.remove(maxHealthCard);
-        attack = true;
+        playerHero.attack = true;
     }
 
-    public void earthBorn(ArrayList<Card> row) { //king
+    public void earthBorn(ArrayList<Card> row, Hero playerHero) { //king
         for (Card card : row) {
-            card.health += heroShifts;
+            card.health += 1;
         }
-        attack = true;
+        playerHero.attack = true;
     }
 
-    public void bloodThirst(ArrayList<Card> row) { //general
+    public void bloodThirst(ArrayList<Card> row, Hero playerHero) { //general
         for (Card card : row) {
-            card.attackDamage += heroShifts;
+            card.attackDamage += 1;
         }
-        attack = true;
+        playerHero.attack = true;
     }
+
+    @Override
+    public boolean isAttack() {
+        return attack;
+    }
+
+    @Override
+    public void setAttack(boolean attack) {
+        this.attack = attack;
+    }
+
+
     @Override
     public String toString() {
         return "CardInput{"

@@ -506,7 +506,7 @@ public class Write {
             return;
         }
 
-        if (attackedCard.isAttack()) {
+        if (attackerCard.isAttack() || attackerCard.isUsedAbility()) {
             attackCardError(action, output, "Attacker card has already attacked this turn.");
             return;
         }
@@ -557,13 +557,144 @@ public class Write {
 
         Spells spells = new Spells();
         if (attackerCard.getName().equals("The Ripper")) {
-            spells.weakKnees(attackedCard);
+            spells.weakKnees(attackedCard, attackerCard);
         } else if (attackerCard.getName().equals("Miraj")) {
             spells.skyJack(attackerCard, attackedCard);
         } else if (attackerCard.getName().equals("The Cursed One")) {
-            spells.shapeShift((Minion) attackedCard, getRow(player1, player2, action.getCardAttacked().getX()));
+            spells.shapeShift(attackedCard, getRow(player1, player2, action.getCardAttacked().getX()), attackerCard);
         } else {
-            spells.godsPlan(attackerCard);
+            spells.godsPlan(attackedCard, attackerCard);
         }
+    }
+
+    public void attackHeroError(ActionsInput action, ArrayNode output, String error) {
+        ObjectNode attackCardOutput = mapper.createObjectNode();
+        attackCardOutput.put("command", action.getCommand());
+
+        ObjectNode attacker = mapper.createObjectNode();
+        attacker.put("x", action.getCardAttacker().getX());
+        attacker.put("y", action.getCardAttacker().getY());
+        attackCardOutput.set("cardAttacker", attacker);
+
+        attackCardOutput.put("error", error);
+        output.add(attackCardOutput);
+    }
+    public boolean useAttackHero(Player player1, Player player2, Game game, ActionsInput action, ArrayNode output) {
+        Player player = new Player();
+        Card attackerCard = player.getPlayerCard(player1, player2, action.getCardAttacker().getX(), action.getCardAttacker().getY());
+        Card playerHero;
+
+        if (game.getTurn() == 1) {
+            playerHero = player2.getPlayerHero();
+        } else {
+            playerHero = player1.getPlayerHero();
+        }
+
+        if (attackerCard.isFrozen()) {
+            attackHeroError(action, output, "Attacker card is frozen.");
+            return false;
+        }
+
+        if (attackerCard.isAttack() || attackerCard.isUsedAbility()) {
+            attackHeroError(action, output, "Attacker card has already attacked this turn.");
+            return false;
+        }
+
+        ArrayList<Card> searchForTank = new ArrayList<>();
+
+        if (game.getTurn() == 1) {
+            searchForTank = getRow(player1, player2, 1);
+        } else {
+            searchForTank = getRow(player1, player2, 2);
+        }
+
+        boolean isTank = false;
+
+        for (int i = 0; i < searchForTank.size(); i++) {
+            if (searchForTank.get(i).getName().equals("Goliath") || searchForTank.get(i).getName().equals("Warden")) {
+                isTank = true;
+            }
+        }
+        if (isTank) {
+            attackHeroError(action, output, "Attacked card is not of type 'Tank'.");
+            return false;
+        }
+
+        Hero hero = new Hero();
+        boolean isDead = hero.attackHero(playerHero, attackerCard);
+        if (isDead) {
+            ObjectNode gameEnded = mapper.createObjectNode();
+            if (game.turn == 1) {
+                gameEnded.put("gameEnded", "Player one killed the enemy hero.");
+            } else {
+                gameEnded.put("gameEnded", "Player two killed the enemy hero.");
+            }
+            output.add(gameEnded);
+            return true;
+        }
+        return false;
+    }
+
+    public void heroAbilityError(ActionsInput action, ArrayNode output, String error) {
+        ObjectNode heroOutput = mapper.createObjectNode();
+        heroOutput.put("command", action.getCommand());
+        heroOutput.put("affectedRow", action.getAffectedRow());
+        heroOutput.put("error", error);
+        output.add(heroOutput);
+    }
+    public void useHeroAbility(Player player1, Player player2, Game game, ActionsInput action, ArrayNode output) {
+        Player player = getTurn(player1, player2, game);
+        Hero playerHero = player.getPlayerHero();
+
+        if (player.getMana() < playerHero.getMana()) {
+            heroAbilityError(action, output, "Not enough mana to use hero's ability.");
+            return;
+        }
+
+        if (playerHero.isAttack()) {
+            heroAbilityError(action, output, "Hero has already attacked this turn.");
+            return;
+        }
+
+        if (playerHero.getName().equals("Lord Royce") || playerHero.getName().equals("Empress Thorina")) {
+            if (game.turn == 1 && (action.getAffectedRow() == 2 || action.getAffectedRow() == 3)) {
+                heroAbilityError(action, output, "Selected row does not belong to the enemy.");
+                return;
+            } else if (game.turn == 2 && (action.getAffectedRow() == 0 || action.getAffectedRow() == 1)) {
+                heroAbilityError(action, output, "Selected row does not belong to the enemy.");
+                return;
+            }
+        } else if (playerHero.getName().equals("General Kocioraw") || playerHero.getName().equals("King Mudface")) {
+            if (game.turn == 1 && (action.getAffectedRow() == 0 || action.getAffectedRow() == 1)){
+                heroAbilityError(action, output, "Selected row does not belong to the current player.");
+                return;
+            } else if (game.turn == 2 && (action.getAffectedRow() == 2 || action.getAffectedRow() == 3)) {
+                heroAbilityError(action, output, "Selected row does not belong to the current player.");
+                return;
+            }
+        }
+
+        Hero hero = new Hero();
+        if (playerHero.getName().equals("Lord Royce")) {
+            hero.subZero(getRow(player1, player2, action.getAffectedRow()), playerHero);
+            player.mana -= playerHero.mana;
+        } else if (playerHero.getName().equals("Empress Thorina")) {
+            hero.lowBlow(getRow(player1, player2, action.getAffectedRow()), playerHero);
+            player.mana -= playerHero.mana;
+        } else if (playerHero.getName().equals("King Mudface")) {
+            hero.earthBorn(getRow(player1, player2, action.getAffectedRow()), playerHero);
+            player.mana -= playerHero.mana;
+        } else if(playerHero.getName().equals("General Kocioraw")) {
+            hero.bloodThirst(getRow(player1, player2, action.getAffectedRow()), playerHero);
+            player.mana -= playerHero.mana;
+        }
+
+    }
+
+    public void playerWins(Integer playerWins, ActionsInput action, ArrayNode output) {
+        ObjectNode heroOutput = mapper.createObjectNode();
+        heroOutput.put("command", action.getCommand());
+        heroOutput.put("output", playerWins);
+        output.add(heroOutput);
     }
 }

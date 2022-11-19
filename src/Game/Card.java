@@ -29,6 +29,17 @@ public class Card {
         attackerCard.attack = true;
     }
 
+    public boolean attackHero(Card playerHero, Card cardAttacker) {
+        playerHero.health -= cardAttacker.attackDamage;
+
+        if (playerHero.health <= 0) {
+            return true;
+        }
+
+        cardAttacker.attack = true;
+        return false;
+    }
+
     public int getMana() {
         return mana;
     }

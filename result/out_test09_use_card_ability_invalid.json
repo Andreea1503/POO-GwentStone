@@ -43,6 +43,17 @@
 }, {
   "command" : "cardUsesAbility",
   "cardAttacked" : {
+    "x" : 1,
+    "y" : 0
+  },
+  "cardAttacker" : {
+    "x" : 3,
+    "y" : 0
+  },
+  "error" : "Attacker card has already attacked this turn."
+}, {
+  "command" : "cardUsesAbility",
+  "cardAttacked" : {
     "x" : 2,
     "y" : 1
   },
@@ -93,14 +104,14 @@
   "output" : [ [ {
     "mana" : 2,
     "attackDamage" : 0,
-    "health" : 4,
+    "health" : 2,
     "description" : "Premium card: The will of Gods has been spoken, obey and you shall be saved...or not.",
     "colors" : [ "Green", "Yellow", "Blue" ],
     "name" : "Disciple"
   } ], [ {
     "mana" : 3,
-    "attackDamage" : 0,
-    "health" : 8,
+    "attackDamage" : 8,
+    "health" : 1,
     "description" : "Standard card: A warrior who is never afraid of battle, no matter the costs",
     "colors" : [ "Red", "Purple" ],
     "name" : "Goliath"

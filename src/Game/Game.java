@@ -67,13 +67,13 @@ public class Game {
         if (game.turn == 1) {
             game.turn = 2;
             player1.endTurn = true;
-            game.unfreezeAndUnblockCards(player1.getFrontRow());
-            game.unfreezeAndUnblockCards(player1.getBackRow());
+            game.unfreezeAndUnblockCards(player1.getFrontRow(), player1);
+            game.unfreezeAndUnblockCards(player1.getBackRow(), player1);
         } else {
             game.turn = 1;
             player2.endTurn = true;
-            game.unfreezeAndUnblockCards(player2.getFrontRow());
-            game.unfreezeAndUnblockCards(player2.getBackRow());
+            game.unfreezeAndUnblockCards(player2.getFrontRow(), player2);
+            game.unfreezeAndUnblockCards(player2.getBackRow(), player2);
         }
 
         if (player1.endTurn && player2.endTurn) {
@@ -85,7 +85,7 @@ public class Game {
         }
     }
 
-    public void unfreezeAndUnblockCards (ArrayList<Card> deck) {
+    public void unfreezeAndUnblockCards (ArrayList<Card> deck, Player player) {
         for (Card card : deck) {
             if (card.frozen == true) {
                 card.frozen = false;
@@ -93,7 +93,11 @@ public class Game {
             if (card.attack == true) {
                 card.attack = false;
             }
+            if (card.usedAbility == true) {
+                card.usedAbility = false;
+            }
         }
+        player.playerHero.attack = false;
     }
 
     // mai bine inca o clasa currentPlayer
@@ -102,6 +106,9 @@ public class Game {
         ArrayList<Card> playerOneDeck = Player.getPlayerDeck(player1, player1.getPlayerDeckIdx(), game);
         ArrayList<Card> playerTwoDeck = Player.getPlayerDeck(player2, player2.getPlayerDeckIdx(), game);
         game.turn = game.getStartingPlayer();
+        Integer playerOneWins = 0;
+        Integer playerTwoWins = 0;
+        Integer totalOfGames = 0;
 
         player1.playerHand = Player.drawCard(playerOneDeck, player1, game);
         player2.playerHand = Player.drawCard(playerTwoDeck, player2, game);
@@ -171,6 +178,22 @@ public class Game {
                 Write.attackCard(player1, player2, action, output, game);
             } else if (action.getCommand().equals("cardUsesAbility")) {
                 Write.useCardAbility(player1, player2, game, action, output);
+            } else if (action.getCommand().equals("useAttackHero")) {
+                boolean playerWins = Write.useAttackHero(player1, player2, game, action, output);
+                if (game.turn == 1 && playerWins) {
+                    playerOneWins++;
+                } else if (game.turn == 2 && playerWins) {
+                    playerTwoWins++;
+                }
+            } else if (action.getCommand().equals("useHeroAbility")) {
+                Write.useHeroAbility(player1, player2, game, action, output);
+            } else if (action.getCommand().equals("getPlayerOneWins")) {
+                Write.playerWins(playerOneWins, action, output);
+            } else if (action.getCommand().equals("getPlayerTwoWins")) {
+                Write.playerWins(playerTwoWins, action, output);
+            } else if (action.getCommand().equals("getTotalGamesPlayed")) {
+                totalOfGames = playerOneWins + playerTwoWins;
+                Write.playerWins(totalOfGames, action, output);
             }
         }
     }
