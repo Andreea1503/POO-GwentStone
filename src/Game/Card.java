@@ -10,7 +10,24 @@ public class Card {
     String description;
     ArrayList<String> colors = new ArrayList<>();
     String name;
+
     boolean frozen;
+    boolean usedAbility;
+    boolean attack;
+
+    public Card() {
+
+    }
+
+    public void attackCard(Card attackedCard, Card attackerCard, ArrayList<Card> tableRow) {
+        attackedCard.health -= attackerCard.attackDamage;
+
+        if (attackedCard.health <= 0) {
+            tableRow.remove(attackedCard);
+        }
+
+        attackerCard.attack = true;
+    }
 
     public int getMana() {
         return mana;
@@ -58,5 +75,28 @@ public class Card {
 
     public void setName(String name) {
         this.name = name;
+    }
+    public boolean isFrozen() {
+        return frozen;
+    }
+
+    public void setFrozen(boolean frozen) {
+        this.frozen = frozen;
+    }
+
+    public boolean isUsedAbility() {
+        return usedAbility;
+    }
+
+    public void setUsedAbility(boolean usedAbility) {
+        this.usedAbility = usedAbility;
+    }
+
+    public boolean isAttack() {
+        return attack;
+    }
+
+    public void setAttack(boolean attack) {
+        this.attack = attack;
     }
 }

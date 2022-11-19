@@ -34,7 +34,7 @@ public class Environment extends Card {
 
     public void winterFell(ArrayList<Card> row) {
         for (Card minion : row) {
-            minion.frozen = true;
+            minion.setFrozen(true);
         }
         usedAbility = true;
     }

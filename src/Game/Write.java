@@ -14,8 +14,10 @@ public class Write {
     public Write() {
 
     }
+
     static ObjectMapper mapper = new ObjectMapper();
-    public static ObjectNode writeCard(Card card) {
+
+    public ObjectNode writeCard(Card card) {
         // create json objects
         try {
             ObjectNode cardOut = mapper.createObjectNode();
@@ -43,7 +45,7 @@ public class Write {
         return null;
     }
 
-    public static void writeDeck(ArrayList<Card> deck, ActionsInput action, ArrayNode output) {
+    public void writeDeck(ArrayList<Card> deck, ActionsInput action, ArrayNode output) {
         // create json objects
         try {
             ObjectNode decksOutput = mapper.createObjectNode();
@@ -70,7 +72,7 @@ public class Write {
         }
     }
 
-    public static void outputCard(Card card, ActionsInput action, ArrayNode output) {
+    public void outputCard(Card card, ActionsInput action, ArrayNode output) {
         // create json objects
         try {
             ObjectNode cardOutput = mapper.createObjectNode();
@@ -88,7 +90,7 @@ public class Write {
         }
     }
 
-    public static void getPlayerTurn(ActionsInput action, int command, ArrayNode output) {
+    public void getPlayerTurn(ActionsInput action, int command, ArrayNode output) {
         // create json objects
         try {
             ObjectNode turnOutput = mapper.createObjectNode();
@@ -103,8 +105,8 @@ public class Write {
         }
     }
 
-    public static boolean placeCard(Card card, ArrayNode output, Player player,
-                                boolean errorOccurred, ActionsInput action) {
+    public boolean placeCard(Card card, ArrayNode output, Player player,
+                             boolean errorOccurred, ActionsInput action) {
         try {
 
             if (card instanceof Environment) {
@@ -122,7 +124,7 @@ public class Write {
                 output.add(placeCardOutput);
                 return true;
             } else if (card.getName().equals("The Ripper") || card.getName().equals("Miraj") ||
-                        card.getName().equals("Goliath") || card.getName().equals("Warden")) {
+                    card.getName().equals("Goliath") || card.getName().equals("Warden")) {
                 if (player.frontRow.size() >= 5) {
                     ObjectNode placeCardOutput = mapper.createObjectNode();
                     placeCardOutput.put("command", action.getCommand());
@@ -133,7 +135,7 @@ public class Write {
                     return true;
                 }
             } else if (card.getName().equals("Sentinel") || card.getName().equals("Berserker") ||
-                        card.getName().equals("The Cursed One") || card.getName().equals("Disciple")) {
+                    card.getName().equals("The Cursed One") || card.getName().equals("Disciple")) {
                 if (player.backRow.size() >= 5) {
                     ObjectNode placeCardOutput = mapper.createObjectNode();
                     placeCardOutput.put("command", action.getCommand());
@@ -151,7 +153,7 @@ public class Write {
         return false;
     }
 
-    public static void getCardsFromHand(ArrayList<Card> hand, ActionsInput action, ArrayNode output) {
+    public void getCardsFromHand(ArrayList<Card> hand, ActionsInput action, ArrayNode output) {
         try {
             ObjectNode cardFromHand = mapper.createObjectNode();
 
@@ -173,7 +175,7 @@ public class Write {
         }
     }
 
-    public static void getCardsOnTheTable(Player player1, Player player2, ActionsInput action, ArrayNode output) {
+    public void getCardsOnTheTable(Player player1, Player player2, ActionsInput action, ArrayNode output) {
         try {
             ObjectNode decksOutput = mapper.createObjectNode();
 
@@ -225,7 +227,7 @@ public class Write {
 ////        }
 ////    }
 
-    public static void getPlayerMana(ActionsInput action, int command, ArrayNode output) {
+    public void getPlayerMana(ActionsInput action, int command, ArrayNode output) {
         // create json objects
         try {
             ObjectNode manaOutput = mapper.createObjectNode();
@@ -242,42 +244,42 @@ public class Write {
         }
     }
 
-    public static void getThePositionOfTheCard(Player player1, Player player2, ActionsInput action, ArrayNode output) {
-            ObjectNode positionOfCard = mapper.createObjectNode();
+    public void getThePositionOfTheCard(Player player1, Player player2, ActionsInput action, ArrayNode output) {
+        ObjectNode positionOfCard = mapper.createObjectNode();
 
-            positionOfCard.put("command", action.getCommand());
+        positionOfCard.put("command", action.getCommand());
 
-            if (action.getX() == 0) {
-                if (player2.getBackRow().size() > 0 && action.getY() < player2.getBackRow().size()) {
-                    positionOfCard.set("output", writeCard(player2.getBackRow().get(action.getY())));
-                } else {
-                    positionOfCard.put("output","No card available at that position." );
-                }
-            } else if (action.getX() == 1) {
-                if (player2.getFrontRow().size() > 0 && action.getY() < player2.getFrontRow().size()) {
-                    positionOfCard.set("output", writeCard(player2.getFrontRow().get(action.getY())));
-                } else {
-                    positionOfCard.put("output","No card available at that position." );
-                }
-            } else if (action.getX() == 2) {
-                if (player1.getFrontRow().size() > 0 && action.getY() < player1.getFrontRow().size()) {
-                    positionOfCard.set("output", writeCard(player1.getFrontRow().get(action.getY())));
-                } else {
-                    positionOfCard.put("output","No card available at that position." );
-                }
+        if (action.getX() == 0) {
+            if (player2.getBackRow().size() > 0 && action.getY() < player2.getBackRow().size()) {
+                positionOfCard.set("output", writeCard(player2.getBackRow().get(action.getY())));
             } else {
-                if (player1.getBackRow().size() > 0 && action.getY() < player1.getBackRow().size()) {
-                    positionOfCard.set("output", writeCard(player1.getBackRow().get(action.getY())));
-                } else {
-                    positionOfCard.put("output","No card available at that position." );
-                }
+                positionOfCard.put("output", "No card available at that position.");
             }
+        } else if (action.getX() == 1) {
+            if (player2.getFrontRow().size() > 0 && action.getY() < player2.getFrontRow().size()) {
+                positionOfCard.set("output", writeCard(player2.getFrontRow().get(action.getY())));
+            } else {
+                positionOfCard.put("output", "No card available at that position.");
+            }
+        } else if (action.getX() == 2) {
+            if (player1.getFrontRow().size() > 0 && action.getY() < player1.getFrontRow().size()) {
+                positionOfCard.set("output", writeCard(player1.getFrontRow().get(action.getY())));
+            } else {
+                positionOfCard.put("output", "No card available at that position.");
+            }
+        } else {
+            if (player1.getBackRow().size() > 0 && action.getY() < player1.getBackRow().size()) {
+                positionOfCard.set("output", writeCard(player1.getBackRow().get(action.getY())));
+            } else {
+                positionOfCard.put("output", "No card available at that position.");
+            }
+        }
 
 //            String json = mapper.writeWithDefaultPrettyPrinter().writeValueAsString(turnOutput)
-            output.add(positionOfCard);
+        output.add(positionOfCard);
     }
 
-    public static void getEnvironmentCardsInHand(Player player, ActionsInput action, ArrayNode output) {
+    public void getEnvironmentCardsInHand(Player player, ActionsInput action, ArrayNode output) {
         try {
             ObjectNode environmentCardInHand = mapper.createObjectNode();
 
@@ -302,7 +304,7 @@ public class Write {
         }
     }
 
-    public static void environmentCardError(ActionsInput action, ArrayNode output, String error) {
+    public void environmentCardError(ActionsInput action, ArrayNode output, String error) {
         ObjectNode placeCardOutput = mapper.createObjectNode();
         placeCardOutput.put("command", action.getCommand());
         placeCardOutput.put("handIdx", action.getHandIdx());
@@ -311,7 +313,7 @@ public class Write {
         output.add(placeCardOutput);
     }
 
-    public static ArrayList<Card> getRow(Player player1, Player player2, Integer affectedRow) {
+    public ArrayList<Card> getRow(Player player1, Player player2, Integer affectedRow) {
         if (affectedRow == 0) {
             return player2.getBackRow();
         } else if (affectedRow == 1) {
@@ -324,14 +326,15 @@ public class Write {
         return null;
     }
 
-    public static Player getTurn(Player player1, Player player2, Game game) {
+    public Player getTurn(Player player1, Player player2, Game game) {
         if (game.turn == 1) {
             return player1;
         } else {
             return player2;
         }
     }
-    public static void useEnvironmentCard(ArrayList<Card> hand, Player player1, Player player2, ActionsInput action, ArrayNode output, Game game) {
+
+    public void useEnvironmentCard(ArrayList<Card> hand, Player player1, Player player2, ActionsInput action, ArrayNode output, Game game) {
         if (!(hand.get(action.getHandIdx()) instanceof Environment)) {
             environmentCardError(action, output, "Chosen card is not of type environment.");
             return;
@@ -387,7 +390,7 @@ public class Write {
         }
     }
 
-    public static void getFrozenCardsOnTheTable(Player player1, Player player2, ActionsInput action, ArrayNode output) {
+    public void getFrozenCardsOnTheTable(Player player1, Player player2, ActionsInput action, ArrayNode output) {
         ObjectNode frozenCard = mapper.createObjectNode();
 
         frozenCard.put("command", action.getCommand());
@@ -421,5 +424,146 @@ public class Write {
         frozenCard.set("output", frozenCards);
 
         output.add(frozenCard);
+    }
+
+    public void attackCardError(ActionsInput action, ArrayNode output, String error) {
+        ObjectNode attackCardOutput = mapper.createObjectNode();
+        attackCardOutput.put("command", action.getCommand());
+
+        ObjectNode attacked = mapper.createObjectNode();
+        attacked.put("x", action.getCardAttacked().getX());
+        attacked.put("y", action.getCardAttacked().getY());
+        attackCardOutput.set("cardAttacked", attacked);
+
+        ObjectNode attacker = mapper.createObjectNode();
+        attacker.put("x", action.getCardAttacker().getX());
+        attacker.put("y", action.getCardAttacker().getY());
+        attackCardOutput.set("cardAttacker", attacker);
+
+        attackCardOutput.put("error", error);
+        output.add(attackCardOutput);
+    }
+
+    public void attackCard(Player player1, Player player2, ActionsInput action, ArrayNode output, Game game) {
+        if ((action.getCardAttacked().getX() == 0 || action.getCardAttacked().getX() == 1) && game.turn != 1) {
+            attackCardError(action, output, "Attacked card does not belong to the enemy.");
+            return;
+        } else if ((action.getCardAttacked().getX() == 2 || action.getCardAttacked().getX() == 3) && game.turn != 2) {
+            attackCardError(action, output, "Attacked card does not belong to the enemy.");
+            return;
+        }
+
+        Player player = new Player();
+        Card attackerCard = player.getPlayerCard(player1, player2, action.getCardAttacker().getX(), action.getCardAttacker().getY());
+        if (attackerCard.isAttack() == true || attackerCard.isUsedAbility() == true) {
+            attackCardError(action, output, "Attacker card has already attacked this turn.");
+            return;
+        }
+
+        if (attackerCard.frozen == true) {
+            attackCardError(action, output, "Attacker card is frozen.");
+            return;
+        }
+
+        Card attackedCard = player.getPlayerCard(player1, player2, action.getCardAttacked().getX(), action.getCardAttacked().getY());
+
+        ArrayList<Card> row = getRow(player1, player2, action.getCardAttacked().getX());
+
+        ArrayList<Card> searchForTank = new ArrayList<>();
+        if (game.getTurn() == 1) {
+            searchForTank = getRow(player1, player2, 1);
+        } else {
+            searchForTank = getRow(player1, player2, 2);
+        }
+        boolean isTank = false;
+        boolean attackedCardIsTank = false;
+
+        for (int i = 0; i < searchForTank.size(); i++) {
+            if (searchForTank.get(i).getName().equals("Goliath") || searchForTank.get(i).getName().equals("Warden")) {
+                isTank = true;
+                if (searchForTank.get(i).equals(attackedCard) && isTank) {
+                    attackedCardIsTank = true;
+                }
+            }
+        }
+        if (isTank && !attackedCardIsTank) {
+            attackCardError(action, output, "Attacked card is not of type 'Tank'.");
+            return;
+        }
+
+        Card card = new Card();
+        card.attackCard(attackedCard, attackerCard, row);
+
+    }
+
+    public void useCardAbility(Player player1, Player player2, Game game, ActionsInput action, ArrayNode output) {
+        Player player = new Player();
+        Card attackerCard = player.getPlayerCard(player1, player2, action.getCardAttacker().getX(), action.getCardAttacker().getY());
+        Card attackedCard = player.getPlayerCard(player1, player2, action.getCardAttacked().getX(), action.getCardAttacked().getY());
+
+        if (attackerCard.isFrozen()) {
+            attackCardError(action, output, "Attacker card is frozen.");
+            return;
+        }
+
+        if (attackedCard.isAttack()) {
+            attackCardError(action, output, "Attacker card has already attacked this turn.");
+            return;
+        }
+
+        if (attackerCard.getName().equals("Disciple")) {
+            if ((action.getCardAttacked().getX() == 2 || action.getCardAttacked().getX() == 3) && (action.getCardAttacker().getX() == 0 || action.getCardAttacker().getX() == 1)){
+                attackCardError(action, output, "Attacked card does not belong to the current player.");
+                return;
+            } else if ((action.getCardAttacked().getX() == 0 || action.getCardAttacked().getX() == 1) && (action.getCardAttacker().getX() == 2 || action.getCardAttacker().getX() == 3)) {
+                attackCardError(action, output, "Attacked card does not belong to the current player.");
+                return;
+            }
+        }
+
+        if (attackerCard.getName().equals("The Ripper") || attackerCard.getName().equals("Miraj") || attackerCard.getName().equals("The Cursed One")) {
+            if ((action.getCardAttacked().getX() == 0 || action.getCardAttacked().getX() == 1) && (action.getCardAttacker().getX() == 0 || action.getCardAttacker().getX() == 1)) {
+                attackCardError(action, output, "Attacked card does not belong to the enemy.");
+                return;
+            } else if ((action.getCardAttacked().getX() == 2 || action.getCardAttacked().getX() == 3) && (action.getCardAttacker().getX() == 2 || action.getCardAttacker().getX() == 3)) {
+                attackCardError(action, output, "Attacked card does not belong to the enemy.");
+                return;
+            }
+        }
+
+        if (!attackerCard.getName().equals("Disciple")) {
+            ArrayList<Card> searchForTank = new ArrayList<>();
+            if (game.getTurn() == 1) {
+                searchForTank = getRow(player1, player2, 1);
+            } else {
+                searchForTank = getRow(player1, player2, 2);
+            }
+            boolean isTank = false;
+            boolean attackedCardIsTank = false;
+
+            for (int i = 0; i < searchForTank.size(); i++) {
+                if (searchForTank.get(i).getName().equals("Goliath") || searchForTank.get(i).getName().equals("Warden")) {
+                    isTank = true;
+                    if (searchForTank.get(i).equals(attackedCard) && isTank) {
+                        attackedCardIsTank = true;
+                    }
+                }
+            }
+            if (isTank && !attackedCardIsTank) {
+                attackCardError(action, output, "Attacked card is not of type 'Tank'.");
+                return;
+            }
+        }
+
+        Spells spells = new Spells();
+        if (attackerCard.getName().equals("The Ripper")) {
+            spells.weakKnees(attackedCard);
+        } else if (attackerCard.getName().equals("Miraj")) {
+            spells.skyJack(attackerCard, attackedCard);
+        } else if (attackerCard.getName().equals("The Cursed One")) {
+            spells.shapeShift((Minion) attackedCard, getRow(player1, player2, action.getCardAttacked().getX()));
+        } else {
+            spells.godsPlan(attackerCard);
+        }
     }
 }

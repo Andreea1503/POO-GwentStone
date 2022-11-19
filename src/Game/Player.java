@@ -20,6 +20,10 @@ public class Player {
 
     ArrayList<Card> playerHand;
 
+    public Player() {
+
+    }
+
     public Player(Decks playerDecks, int playerDeckIdx,
                   Hero playerHero) {
         this.playerDecks = playerDecks;
@@ -41,6 +45,28 @@ public class Player {
         }
         Collections.shuffle(deck, new Random(game.getShuffleSeed()));
         return deck;
+    }
+
+    public Card getPlayerCard(Player player1, Player player2, Integer X, Integer Y) {
+        Card playerCard = null;
+        if (X == 0) {
+            if (player2.backRow.size() > Y) {
+                playerCard = player2.backRow.get(Y);
+            }
+        } else if (X == 1) {
+            if (player2.frontRow.size() > Y) {
+                playerCard = player2.frontRow.get(Y);
+            }
+        } else if (X == 2) {
+            if (player1.frontRow.size() > Y) {
+                playerCard = player1.frontRow.get(Y);
+            }
+        } else {
+            if (player1.backRow.size() > Y) {
+                playerCard = player1.backRow.get(Y);
+            }
+        }
+        return playerCard;
     }
 
     public static ArrayList<Card> drawCard(ArrayList<Card> deck, Player player, Game game){

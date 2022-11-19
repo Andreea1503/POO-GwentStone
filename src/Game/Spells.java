@@ -5,35 +5,43 @@ import fileio.CardInput;
 import java.util.ArrayList;
 
 public class Spells extends Minion {
-    boolean usedAbility;
     public static int spellsShift = 2;
 
+    public Spells() {
+
+    }
     public Spells(CardInput card) {
         super(card);
         this.usedAbility = false;
     }
 
-    public void weakKnees(Minion card) { // The Ripper
-        card.health -= spellsShift;
+    public void weakKnees(Card card) { // The Ripper
+        card.attackDamage -= 2;
+        if (card.attackDamage < 0) {
+            card.attackDamage = 0;
+        }
         usedAbility = true;
     }
 
-    public void skyJack(Minion playerOneHealth, Minion playerTwoHealth) {
-        Minion aux = playerOneHealth;
-        playerOneHealth = playerTwoHealth;
-        playerTwoHealth = aux;
+    public void skyJack(Card playerOne, Card playerTwo) {
+        Integer aux = playerOne.health;
+        playerOne.health = playerTwo.health;
+        playerTwo.health = aux;
         usedAbility = true;
     }
 
-    public void shapeShift (Minion card) {
-        int aux = card.health;
+    public void shapeShift (Card card, ArrayList<Card> row) {
+        Integer aux = card.health;
         card.health = card.attackDamage;
         card.attackDamage = aux;
         usedAbility = true;
+        if (card.health <= 0) {
+            row.remove(card);
+        }
     }
 
-    public void godsPlan(Minion card) {
-        card.health += spellsShift;
+    public void godsPlan(Card card) {
+        card.health += 2;
         usedAbility = true;
     }
 }

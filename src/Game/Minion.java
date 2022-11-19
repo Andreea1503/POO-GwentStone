@@ -5,8 +5,10 @@ import fileio.CardInput;
 import java.util.ArrayList;
 
 public class Minion extends Card {
-    boolean attack;
 
+    public Minion() {
+
+    }
     public Minion(CardInput card) {
         this.mana = card.getMana();
         this.attackDamage = card.getAttackDamage();

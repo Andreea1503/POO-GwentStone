@@ -17,6 +17,7 @@ public class Game {
     Integer startingPlayer;
     Integer shuffleSeed;
     Integer round;
+
     Integer turn;
 
     public Game(int startingPlayer, int shuffleSeed) {
@@ -66,11 +67,13 @@ public class Game {
         if (game.turn == 1) {
             game.turn = 2;
             player1.endTurn = true;
-            unfreezeCards(playerOneDeck);
+            game.unfreezeAndUnblockCards(player1.getFrontRow());
+            game.unfreezeAndUnblockCards(player1.getBackRow());
         } else {
             game.turn = 1;
             player2.endTurn = true;
-            unfreezeCards(playerTwoDeck);
+            game.unfreezeAndUnblockCards(player2.getFrontRow());
+            game.unfreezeAndUnblockCards(player2.getBackRow());
         }
 
         if (player1.endTurn && player2.endTurn) {
@@ -82,10 +85,13 @@ public class Game {
         }
     }
 
-    public static void unfreezeCards (ArrayList<Card> deck) {
+    public void unfreezeAndUnblockCards (ArrayList<Card> deck) {
         for (Card card : deck) {
             if (card.frozen == true) {
                 card.frozen = false;
+            }
+            if (card.attack == true) {
+                card.attack = false;
             }
         }
     }
@@ -102,6 +108,7 @@ public class Game {
         Player.nextRound(player1, player2, game);
 //        System.out.println(playerOneDeck);
 //        System.out.println(playerTwoDeck);
+        Write Write = new Write();
 
         for (ActionsInput action : actionsInputs) {
             if (action.getCommand().equals("getPlayerDeck")) {
@@ -160,6 +167,10 @@ public class Game {
                 }
             } else if (action.getCommand().equals("getFrozenCardsOnTable")) {
                 Write.getFrozenCardsOnTheTable(player1, player2, action, output);
+            } else if (action.getCommand().equals("cardUsesAttack")) {
+                Write.attackCard(player1, player2, action, output, game);
+            } else if (action.getCommand().equals("cardUsesAbility")) {
+                Write.useCardAbility(player1, player2, game, action, output);
             }
         }
     }
@@ -167,6 +178,7 @@ public class Game {
 
     public static void placeCardOnTheTable(ActionsInput action, ArrayNode output, Player player) {
         boolean errorOccurred = false;
+        Write Write = new Write();
 
         for (int i = 0; i < player.getPlayerHand().size(); i++) {
             if (action.getHandIdx() == i && action.getHandIdx() < player.getPlayerHand().size()) {
@@ -207,6 +219,14 @@ public class Game {
     public void setShuffleSeed(int shuffleSeed) {
         this.shuffleSeed = shuffleSeed;
     }
+    public Integer getTurn() {
+        return turn;
+    }
+
+    public void setTurn(Integer turn) {
+        this.turn = turn;
+    }
+
 
     @Override
     public String toString() {
