@@ -274,7 +274,8 @@ public class Write {
                 positionOfCard.put("output", "No card available at that position.");
             }
         }
-
+        positionOfCard.put("x", action.getX());
+        positionOfCard.put("y" , action.getY());
 //            String json = mapper.writeWithDefaultPrettyPrinter().writeValueAsString(turnOutput)
         output.add(positionOfCard);
     }
