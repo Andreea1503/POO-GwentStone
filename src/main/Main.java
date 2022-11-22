@@ -1,6 +1,5 @@
 package main;
-import java.util.Random;
-import Game.*;
+import game.*;
 import checker.Checker;
 import checker.CheckerConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,7 +8,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import fileio.*;
 
-import javax.lang.model.type.ArrayType;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -98,8 +96,8 @@ public final class Main {
             Player player1 = new Player(Game.createDecks(decksInputPlayer1),
                                 stGameInput.getPlayerOneDeckIdx(),
                                 playerOneHero);
-            Player player2 = new Player(Game.createDecks(decksInputPlayer2), stGameInput.getPlayerTwoDeckIdx(),
-                                        playerTwoHero);
+            Player player2 = new Player(Game.createDecks(decksInputPlayer2),
+                                        stGameInput.getPlayerTwoDeckIdx(), playerTwoHero);
             game = new Game(stGameInput.getStartingPlayer(), stGameInput.getShuffleSeed());
             ArrayList<ActionsInput> actionsInputs = gameInput.getActions();
             game.parseActions(actionsInputs, game, player1, player2, output, wins);

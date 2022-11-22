@@ -1,0 +1,44 @@
+2022 Spinochi Andreea 322CA
+
+Components
+
+The homework consists of two packages named "game" and "write". "game" includes
+many classes such as: Card, Decks, Environment, Game, Hero, Minion, Player and
+Spells, that represent specific information about the card game. Other than
+that, the class "write" has only one class included which is the class "write"
+where the output is made.
+
+game: This package includes the classes used for the sole implementation of the
+card game. The rules of the game have been implemented within the classes with
+a descriptive name: Card, Decks, Game, Environment, Minion, Hero, Player and
+Spells. The classes Hero, Minion, Environment and Spells inherit the class
+Card, because in this way generality is created. So, no matter what type of
+card the system wants to create, it can make it by using generally the class
+Card. When it comes to the class Decks, it stores the number of decks that
+each player has, how many cards are within every deck, and the list of decks.
+Also, the player object stores all the information about the player: the decks
+they have, the hero, which deck they use in that specific game, mana, the cards
+on the table, the cards they have in their hand and whose turn has ended. On
+the other hand, class Game holds the shuffle seed after which the chosen deck
+is shuffled, the player that starts the game, which round and whose turn it is.
+
+write: This package includes only one class used for writing the output in json.
+It has many methods, one for every given command.
+
+Design Flow
+
+The implementation starts in Main, where an ArrayList of wins for each player is
+instantiated. Then the program parses through the games, instantiating for each
+game the players, players' heroes and the game. Although, the input classes are
+already done, the classes in the "game" package, take every class from the
+input and reconstruct the elements with whom we want to work. So, every card
+is taken out of the CardsInput class and an arraylist of cards is formed(a
+deck). After, an arraylist of decks is made from whom the player will be given
+a deck from the input. Every additional spell that a type of card has is
+implemented in the class to which it belongs. Then, the application parses
+through the actions(by calling the "parseActions" method from the Game class).
+"parseActions" maps every command of the game to a function that does the
+action named in the input or writes an error in the output if the action can't
+be done. When it comes to the methods in the "write" package, they are made to
+write in the output file by creating an initial ObjectNode which maps every
+command/deck/card/error owned by our classes to a JSON value.
